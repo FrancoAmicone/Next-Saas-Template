@@ -30,6 +30,30 @@ A complete starter kit for building SaaS applications with Next.js, Supabase, an
 - **Modern UI** - Beautiful, responsive UI built with TailwindCSS and shadcn/ui components
 - **TypeScript** - Type-safe code with TypeScript
 - **Vercel Ready** - Ready to deploy on Vercel with minimal configuration
+- **OpenAI Integration** - Ready to use OpenAI API for AI-powered features
+
+## OpenAI Integration
+
+Este template incluye una utilidad para consumir la API de OpenAI fácilmente desde `/src/lib/openai.ts`.
+
+### Configuración
+
+Agrega tu clave de API de OpenAI en el archivo `.env.local`:
+
+```env
+OPENAI_API_KEY=tu-clave-de-openai
+```
+
+### Ejemplo de uso
+
+```typescript
+import { getCompletion } from "@/lib/openai";
+
+const completion = await getCompletion({
+  prompt: "Dame 5 ideas de negocio SaaS innovadoras",
+});
+console.log(completion);
+```
 
 ## Tech Stack
 
@@ -72,6 +96,9 @@ A complete starter kit for building SaaS applications with Next.js, Supabase, an
    STRIPE_SECRET_KEY=sk_test_...
    STRIPE_WEBHOOK_SECRET=whsec_...
    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+   # OpenAI
+   OPENAI_API_KEY=<your-openai-key>
 
    # App
    NEXT_PUBLIC_APP_URL=http://localhost:3000

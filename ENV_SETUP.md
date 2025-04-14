@@ -13,6 +13,9 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 
+# OpenAI
+OPENAI_API_KEY=<your-openai-key>
+
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
@@ -31,6 +34,12 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
    stripe listen --forward-to localhost:3000/api/webhooks/stripe
    ```
+
+### OpenAI
+1. Crea una cuenta en [OpenAI](https://platform.openai.com/)
+2. Ve a la sección de API Keys en tu dashboard de OpenAI
+3. Genera una nueva API Key y cópiala
+4. Agrega la clave como OPENAI_API_KEY en tu archivo `.env.local`
 
 ### App URL
 - For local development: `http://localhost:3000`

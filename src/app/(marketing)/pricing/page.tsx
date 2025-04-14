@@ -1,130 +1,98 @@
-'use client'
+'use client';
+import React from "react";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { getSupabase } from '@/lib/supabase'
+const STRIPE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.STRIPE_SECRET_KEY;
 
-// Example pricing tiers - replace with your actual pricing
-const examplePricing = [
+const demoPlans = [
   {
-    name: 'Hobby',
-    description: 'Perfect for personal projects and hobbyists',
-    price: '$9',
-    interval: 'month',
-    features: ['1 project', 'Community support', 'Basic analytics'],
+    name: "Starter",
+    price: "$9/mo",
+    description: "Perfect to try AI features and launch your first SaaS.",
+    features: ["Basic AI features", "1 project", "Email support"],
     highlighted: false,
+    cta: "Choose Plan"
   },
   {
-    name: 'Pro',
-    description: 'For small teams and growing businesses',
-    price: '$29',
-    interval: 'month',
-    features: ['10 projects', 'Priority support', 'Advanced analytics', 'Team collaboration', 'Custom domains'],
+    name: "Pro",
+    price: "$29/mo",
+    description: "For growing SaaS projects that need more power.",
+    features: ["All Starter features", "Unlimited projects", "Priority support", "Advanced AI features"],
     highlighted: true,
+    cta: "Choose Plan"
   },
   {
-    name: 'Enterprise',
-    description: 'Best for large teams and enterprises',
-    price: '$99',
-    interval: 'month',
-    features: [
-      'Unlimited projects',
-      'Dedicated support',
-      'Custom integrations',
-      'SSO & advanced security',
-      'Service level agreement',
-      'Account manager',
-      'Early access to features',
-    ],
+    name: "Enterprise",
+    price: "Custom",
+    description: "Custom AI solutions and dedicated support.",
+    features: ["All Pro features", "Dedicated support", "Custom AI integrations"],
     highlighted: false,
-  },
+    cta: "Contact Sales"
+  }
 ];
 
-const isStripeConfigured = Boolean(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
-
 export default function PricingPage() {
-  const [isLoading, setIsLoading] = useState<string | null>(null)
-  const router = useRouter()
-  
-  const handleCheckout = (planName: string) => {
-    alert(`Demo only: Checkout for the '${planName}' plan is disabled.`);
-  }
-  
+  const isDemo = !STRIPE_KEY;
+
   return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-base font-semibold leading-7 text-blue-600">Pricing</h1>
-          <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Pricing plans for teams of all sizes
-          </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            Choose the perfect plan for your needs. Always know what you'll pay.
-          </p>
-        </div>
-        
-        <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2 lg:max-w-4xl lg:grid-cols-3">
-          {examplePricing.map((tier: {
-  name: string;
-  description: string;
-  price: string;
-  interval: string;
-  features: string[];
-  highlighted: boolean;
-}) => (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center px-4 py-12">
+      <section className="max-w-2xl text-center mb-12">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Pricing</h1>
+        <p className="text-lg sm:text-xl text-gray-700 mb-6">
+          Simple, transparent pricing. <span className="font-semibold text-blue-600">AI features included</span> in every plan.
+        </p>
+        {isDemo && (
+          <div className="mb-4 inline-block rounded-full bg-yellow-100 px-4 py-1 text-sm font-semibold text-yellow-700">
+            Demo mode: Connect your Stripe keys to enable real payments.
+          </div>
+        )}
+      </section>
+      <section className="max-w-4xl w-full mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {demoPlans.map((plan) => (
             <div
-              key={tier.name}
-              className={`rounded-3xl p-8 ring-1 ring-gray-200 ${
-                tier.highlighted ? 'bg-gray-900 text-white ring-gray-900' : 'bg-white text-gray-900'
-              }`}
+              key={plan.name}
+              className={`bg-white rounded-lg shadow p-8 flex flex-col items-center border-2 ${plan.highlighted ? "border-blue-600 scale-105" : "border-transparent"} transition-transform`}
             >
-              <h2 className="text-lg font-semibold leading-8">{tier.name}</h2>
-              <p className={`mt-4 text-sm leading-6 ${tier.highlighted ? 'text-gray-300' : 'text-gray-600'}`}>
-                {tier.description}
-              </p>
-              <p className="mt-6 flex items-baseline gap-x-1">
-                <span className="text-4xl font-bold tracking-tight">{tier.price}</span>
-                <span className={`text-sm font-semibold leading-6 ${tier.highlighted ? 'text-gray-300' : 'text-gray-600'}`}>
-                  /{tier.interval}
-                </span>
-              </p>
-              <ul
-                className={`mt-8 space-y-3 text-sm leading-6 ${tier.highlighted ? 'text-gray-300' : 'text-gray-600'}`}
-              >
-                {tier.features.map((feature: string) => (
-                  <li key={feature} className="flex gap-x-3">
-                    <svg
-                      className={`h-6 w-5 flex-none ${tier.highlighted ? 'text-white' : 'text-blue-600'}`}
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {feature}
-                  </li>
+              <h2 className="font-semibold text-2xl mb-2 text-blue-700">{plan.name}</h2>
+              <p className="text-3xl font-bold mb-4">{plan.price}</p>
+              <p className="mb-4 text-gray-600">{plan.description}</p>
+              <ul className="mb-6 text-gray-700 text-sm space-y-1 text-left">
+                {plan.features.map((f) => (
+                  <li key={f}>✔️ {f}</li>
                 ))}
               </ul>
               <button
-                onClick={() => handleCheckout(tier.priceId)}
-                disabled={isLoading === tier.priceId}
-                className={`mt-8 block w-full rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                  tier.highlighted
-                    ? 'bg-white text-gray-900 hover:bg-gray-100 focus-visible:outline-white'
-                    : 'bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600'
-                }`}
+                className={`w-full bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold transition ${plan.highlighted ? "shadow-lg" : ""}`}
+                disabled={isDemo}
+                onClick={async () => {
+                  if (isDemo) return;
+                  const res = await fetch("/api/stripe/checkout-session", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ plan: plan.name }),
+                  });
+                  const data = await res.json();
+                  if (data.url) {
+                    window.location.href = data.url;
+                  } else {
+                    alert(data.error || "Could not start checkout session.");
+                  }
+                }}
               >
-                {isLoading === tier.priceId ? 'Processing...' : 'Get started today'}
+                {plan.cta}
               </button>
             </div>
           ))}
         </div>
-      </div>
+      </section>
+      {!isDemo && (
+        <section className="max-w-xl w-full mt-8 text-center">
+          <div className="text-green-700 font-semibold bg-green-100 rounded p-4">
+            {/* Aquí irá la integración real de Stripe Checkout */}
+            Stripe integration enabled. Ready for real payments.
+          </div>
+        </section>
+      )}
     </div>
-  )
+  );
 }
