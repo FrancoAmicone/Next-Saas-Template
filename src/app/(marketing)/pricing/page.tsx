@@ -5,94 +5,50 @@ import { useRouter } from 'next/navigation'
 import { getSupabase } from '@/lib/supabase'
 
 // Example pricing tiers - replace with your actual pricing
-const pricingTiers = [
+const examplePricing = [
   {
     name: 'Hobby',
-    description: 'All the basics for personal projects',
+    description: 'Perfect for personal projects and hobbyists',
     price: '$9',
     interval: 'month',
-    features: [
-      'Feature 1',
-      'Feature 2',
-      'Feature 3',
-    ],
-    priceId: 'price_hobby', // Replace with actual Stripe price ID
+    features: ['1 project', 'Community support', 'Basic analytics'],
     highlighted: false,
   },
   {
     name: 'Pro',
-    description: 'Perfect for small teams and growing businesses',
+    description: 'For small teams and growing businesses',
     price: '$29',
     interval: 'month',
-    features: [
-      'Feature 1',
-      'Feature 2',
-      'Feature 3',
-      'Feature 4',
-      'Feature 5',
-    ],
-    priceId: 'price_pro', // Replace with actual Stripe price ID
+    features: ['10 projects', 'Priority support', 'Advanced analytics', 'Team collaboration', 'Custom domains'],
     highlighted: true,
   },
   {
     name: 'Enterprise',
-    description: 'Advanced features for large teams',
+    description: 'Best for large teams and enterprises',
     price: '$99',
     interval: 'month',
     features: [
-      'Feature 1',
-      'Feature 2',
-      'Feature 3',
-      'Feature 4',
-      'Feature 5',
-      'Feature 6',
-      'Feature 7',
+      'Unlimited projects',
+      'Dedicated support',
+      'Custom integrations',
+      'SSO & advanced security',
+      'Service level agreement',
+      'Account manager',
+      'Early access to features',
     ],
-    priceId: 'price_enterprise', // Replace with actual Stripe price ID
     highlighted: false,
   },
-]
+];
+
+const isStripeConfigured = Boolean(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
 
 export default function PricingPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null)
   const router = useRouter()
   
-  const handleCheckout = async (priceId: string) => {
-    setIsLoading(priceId)
-    
-    try {
-      // Check if user is authenticated
-      const supabase = getSupabase()
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        // Redirect to login if not authenticated
-        router.push('/login?redirect=pricing')
-        return
-      }
-      
-      // Create checkout session
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ priceId }),
-      })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
-      }
-      
-      // Redirect to Stripe Checkout
-      window.location.href = data.url
-    } catch (error) {
-      console.error('Error creating checkout session:', error)
-    } finally {
-      setIsLoading(null)
-    }
+  const handleCheckout = (planName: string) => {
+    alert(`Demo only: Checkout for the '${planName}' plan is disabled.`);
   }
   
   return (
@@ -109,7 +65,14 @@ export default function PricingPage() {
         </div>
         
         <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2 lg:max-w-4xl lg:grid-cols-3">
-          {pricingTiers.map((tier) => (
+          {examplePricing.map((tier: {
+  name: string;
+  description: string;
+  price: string;
+  interval: string;
+  features: string[];
+  highlighted: boolean;
+}) => (
             <div
               key={tier.name}
               className={`rounded-3xl p-8 ring-1 ring-gray-200 ${
@@ -129,7 +92,7 @@ export default function PricingPage() {
               <ul
                 className={`mt-8 space-y-3 text-sm leading-6 ${tier.highlighted ? 'text-gray-300' : 'text-gray-600'}`}
               >
-                {tier.features.map((feature) => (
+                {tier.features.map((feature: string) => (
                   <li key={feature} className="flex gap-x-3">
                     <svg
                       className={`h-6 w-5 flex-none ${tier.highlighted ? 'text-white' : 'text-blue-600'}`}

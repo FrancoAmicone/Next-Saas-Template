@@ -1,10 +1,15 @@
 import { ReactNode } from 'react'
 import Navbar from '@/components/navbar'
-import { getCurrentUser } from '@/lib/auth'
+
+const isSupabaseConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 export default async function MarketingLayout({ children }: { children: ReactNode }) {
-  const user = await getCurrentUser()
-  
+  let user = null
+  if (isSupabaseConfigured) {
+    // Solo import y llama a getCurrentUser si hay config
+    const { getCurrentUser } = await import('@/lib/auth')
+    user = await getCurrentUser()
+  }
   return (
     <div className="min-h-screen bg-white">
       <Navbar user={user} />
